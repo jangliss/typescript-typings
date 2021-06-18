@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/ded1efdca0713a3df3ec18b225892655e8408e33/backbone/backbone-global.d.ts",
+    "raw": "registry:dt/backbone-global#1.0.0+20160622233725",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/ded1efdca0713a3df3ec18b225892655e8408e33/backbone/backbone-global.d.ts"
+  }
+}

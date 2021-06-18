@@ -1,3 +1,5 @@
+/// <reference path='globals/openlayers/index.d.ts' />
+
 interface Array<T>
 {
     find(callback: (element: T, index: number, array: Array<T>) => boolean);
@@ -5,6 +7,12 @@ interface Array<T>
 
 declare namespace WazeNS
 {
+    export interface App {
+        getAppRegionCode(): string;
+        modeController: any;
+        layout: any;
+    }
+
     export interface DataModel
     {
         cities: Model.ObjectRepository<WazeNS.Modules.Cities.Model.City, number>;
@@ -28,6 +36,7 @@ declare namespace WazeNS
     export interface Controller
     {
         reload(): void;
+        reloadData(): void;
         updateModel(e: any): void;
     }
 
@@ -66,15 +75,20 @@ declare namespace WazeNS
         setLayerVisibility(layer: string, state: boolean): void;
         zoomTo(zoomLevel: number): void;
         roadLayers: Array<OpenLayers.Layer.XYZ>;
+        getOLMap(): OpenLayers.Map;
     }
 
-    export interface SelectedItem extends WazeNS.Feature.Vector {
-        model: Feature.Vector;
+    export interface SelectedItem extends WazeNS.Feature.Vector<string> {
+        model: Feature.Vector<string>;
     }
 
     export interface SelectionManager {
         selectedItems: Array<SelectedItem>;
         events: OpenLayers.Events;
+    }
+
+    export interface Prefs {
+        on(event: string, callback: any): void;
     }
 
     namespace Model
@@ -83,13 +97,25 @@ declare namespace WazeNS
         {
             export interface Address {
                 attributes: {
+                    altStreets: Array<WazeNS.Model.Object.Street>;
                     city: WazeNS.Model.Object.City;
                     country: WazeNS.Model.Object.Country;
                     houseNumber: string;
+                    isEmpty: boolean;
                     state: WazeNS.Model.Object.State;
                     street: WazeNS.Model.Object.Street;
-                    isEmpty: boolean;
-                }
+                };
+                getCity(): WazeNS.Model.Object.City;
+                getCityName(): string;
+                getCountry(): WazeNS.Model.Object.Country;
+                getCountryName(): string;
+                getHouseNumber(): string;
+                getState(): WazeNS.Model.Object.State;
+                getStateName(): string;
+                hasState(): boolean;
+                isEmpty(): boolean;
+                isEmptyStreet(): boolean;
+
             }
 
             export interface City extends WazeNS.Model.Object<number>
@@ -97,13 +123,17 @@ declare namespace WazeNS
                 attributes: {
                     countryID: number;
                     englishName: string;
-                    isEmpy: boolean;
+                    isEmpty: boolean;
                     name: string;
                     permissions: number;
                     rank: number;
                     stateID: number;
                 };
+                getCountryID(): number;
+                getEnglishName(): string;
                 hasName(): boolean;
+                getName(): boolean;
+                isEmpty(): boolean;
             }
 
             export interface ModelCollection<T> {
@@ -140,13 +170,19 @@ declare namespace WazeNS
 
             export interface Junction extends WazeNS.Model.Object<number>
             {
+                attributes: {
+                    id: number;
+                    segIDs: Array<number>
+                };
                 segIDs: Array<number>;
                 getAllSegments(): Array<WazeNS.Model.Object<number>>
             }
 
-            export interface MapComment extends Feature.Vector
+            export interface MapComment extends Feature.Vector<string>
             {
                 attributes: {
+                    name: string;
+                    labelText: string;
                     body: string;
                     createdBy: number;
                     createdOn: number;
@@ -176,56 +212,95 @@ declare namespace WazeNS
                 isDefault: boolean;
             }
 
-            export interface Venue extends Feature.Vector.Landmark
+            export interface Venue extends Feature.Vector.Venue
             {
                 attributes: {
                     adLocked: boolean;
-                    createdBy: number;
-                    id: string;
+                    aliases: Array<string>;
                     approved: boolean;
                     brand: string;
                     categories: Array<string>;
+                    categoryAttributes: {
+                        PARKING_LOT: {
+                            canExitWhileClosed: boolean;
+                            costType: string;
+                            hasTBR: boolean;
+                            lotType: Array<any>;
+                            parkingType: string;
+                            paymentType: Array<any>;
+                        }
+                    }
+                    createdBy: number;
+                    createdOn: number;
                     description: string;
-                    externalProviderIDs: Array<any>;
+                    entryExitPoints: Array<{
+                        getEntry(): boolean;
+                        getExit(): boolean;
+                        getName(): string;
+                        getPoint(): OpenLayers.Geometry.Point;
+                        isPrimary(): boolean;
+                    }>;
+                    externalProviderIDs: Array<WazeNS.Model.Object.ExternalProvider>;
+                    geometry: OpenLayers.Geometry.Collection;
                     houseNumber: string;
+                    id: string;
                     lockRank: number;
                     name: string;
+                    openingHours: Array<any>;
+                    phone: string;
                     residential: boolean;
+                    streetID: number;
                     updatedBy: number;
+                    updatedOn: number;
                     url: string;
                 };
+                id: string;
                 geometry: OpenLayers.Geometry.Collection;
             }
 
             export interface Segment extends Feature.Vector.Segment
             {
                 attributes: {
-                    id: number;
                     createdBy: number;
-                    primaryStreetID: number;
+                    createdOn: number;
+                    flags: number;
+                    fwdDirection: boolean;
+                    fwdLaneCount: number;
+                    fwdMaxSpeed: number;
+                    fwdMaxSpeedUnverified: boolean;
+                    fwdToll: boolean;
+                    geometry: OpenLayers.Geometry;
+                    hasClosures: boolean;
+                    hasHNs: boolean;
+                    id: number;
                     length: number;
                     level: number;
                     lockRank: number;
-                    geometry: OpenLayers.Geometry;
-                    roadType: number;
-                    routingRoadType: number;
-                    fwdDirection: boolean;
+                    primaryStreetID: number;
+                    rank: number;
                     revDirection: boolean;
+                    revLaneCount: number;
                     revMaxSpeed: number;
                     revMaxSpeedUnverified: boolean;
-                    fwdMaxSpeed: number;
-                    fwdMaxSpeedUnverified: boolean;
+                    revToll: boolean;
+                    roadType: number;
+                    routingRoadType: number;
                     streetIDs: Array<number>;
                     updatedBy: number;
+                    updatedOn: number;
+                    validated: boolean;
                 };
                 geometry: OpenLayers.Geometry.Collection;
+                getDrivingRestrictionCount(): number;
             }
 
             export interface Street extends Model.Object<number>
             {
                 cityID: number;
-                isEmpty(): boolean;
+                isEmpty: boolean;
                 signText: string;
+                signType: number;
+                direction: string;
             }
 
             export interface LoggedInUser
@@ -260,20 +335,63 @@ declare namespace WazeNS
                 type: string;
                 userName: string;
             }
+
+            export interface ExternalProvider {
+                attributes: {
+                    id: string;
+                    location: string;
+                    name: string;
+                    url: string;
+                    uuid: string;
+                };
+                changed: {
+                    uuid: string;
+                };
+                cid: string;
+                id: string;
+                previousAttributes: {
+                    id: string;
+                    location: string;
+                    name: string;
+                    url: string;
+                    uuid: string;
+                };
+            }
         }
 
         namespace Graph
         {
             export interface TurnGraph
             {
-                getTurnThroughNode(n: Feature.Vector.Node, fromSeg: Feature.Vector.Segment, toSeg: Feature.Vector.Segment) : {
-                    getTurnData(): {
-                        getRestrictions() : Array<any>;
-                        isAllowed(): boolean;
-                        isDisallowed(): boolean;
-                        isUnknown(): boolean;
-                    }
-                }
+                getTurnThroughNode(n: Feature.Vector.Node, fromSeg: Feature.Vector.Segment, toSeg: Feature.Vector.Segment) : Turn;
+            }
+
+            export interface Turn {
+                getTurnData(): TurnData;
+            }
+
+            export interface TurnData {
+                getInstructionOpcode(): string;
+                hasInstructionOpcode(): boolean;
+                getRestrictions() : Array<any>;
+                isAllowed(): boolean;
+                isDisallowed(): boolean;
+                isUnknown(): boolean;
+                hasTurnGuidance(): boolean;
+                getTurnGuidance(): TurnGuidance;
+            }
+
+            export interface TurnGuidance {
+                getTowards(): string;
+                getTTS(): string;
+                getVisualInstruction(): string;
+                getRoadShields(): any;
+                getExitSigns(): Array<ExitSign>;
+            }
+
+            export interface ExitSign {
+                text: string;
+                type: number
             }
         }
 
@@ -309,10 +427,15 @@ declare namespace WazeNS
             }
         }
 
+        export interface Flag {
+            flag: number;
+            mask: string;
+        }
+
         export interface ObjectRepository<T, TId>
         {
-            get(id: TId): T;
             getByAttributes(e: any): T;
+            getObjectById(id: TId): T;
         }
 
         export interface SegmentRepository extends ObjectRepository<Model.Object.Segment, number>
@@ -339,34 +462,39 @@ declare namespace WazeNS
 
         export interface Object<T>
         {
-            id: T;
+            // id: T;
             state: string;
             name: string;
             type: string;
             persistent: boolean;
-            getID(): T;
-            setID(id: T): void;
-            isNew(): boolean;
-            isDeleted(): boolean;
-            isUpdated(): boolean;
-            isUnchanged(): boolean;
-            getVersion() : number;
+
+            arePropertiesEditable(): boolean;
             clone() : Object<T>;
-            setSelected(e: boolean): void;
-            isSelected(): boolean;
-            setSnapped(e: boolean): void;
-            isSnapped(): boolean;
-            setPersistent(e: boolean);
-            isPersistent(): boolean;
+            getCreatedBy(): number;
+            getCreatedOn(): number;
+            getID(): T;
             getPermissions(): number;
-            isAllowed: boolean;
+            getType(): string;
+            getUpdatedBy(): number;
+            getUpdatedOn(): number;
+            getVersion() : number;
+            id: T;
+            isAllowed(permission: number): boolean;
+            isDeletable(): boolean;
+            isDeleted(): boolean;
+            isGeometryEditable(): boolean;
             isInUse(e: any): boolean;
-            isDeletable: boolean;
-            arePropertiesEditable: boolean;
-            isGeometryEditable: boolean;
+            isNew(): boolean;
+            isPersistent(): boolean;
+            isSelected(): boolean;
+            isSnapped(): boolean;
+            isUnchanged(): boolean;
+            isUpdated(): boolean;
             merge(e: any): void;
-            getOriginalValue(e: any): any;
-            getAttributes(): Object<T>;
+            setID(id: T): void;
+            setPersistent(e: boolean): void;
+            setSelected(e: boolean): void;
+            setSnapped(e: boolean): void;
             CLASS_NAME: string;
         }
 
@@ -381,7 +509,7 @@ declare namespace WazeNS
                 areas: Array<WazeNS.Model.Object.EditableArea>;
             }
 
-            export interface Landmark extends Vector
+            export interface Landmark extends Vector<string>
             {
                 constructor({
                     geometry,
@@ -408,7 +536,7 @@ declare namespace WazeNS
                 isResidential(): boolean;
             }
 
-            export interface Node extends Vector
+            export interface Node extends Vector<number>
             {
                 allConnectionKeys() : {
                     all: Array<{
@@ -425,27 +553,41 @@ declare namespace WazeNS
                 attributes: {
                     id: number;
                     segIDs: Array<number>;
+                    name: string;
+                    labelText: string;
                 };
                 connectionsExist(): boolean;
                 isDeleteable(model: WazeNS.DataModel): boolean;
             }
 
-            export interface Segment
+            export interface Segment extends WazeNS.Feature.Vector<number>
             {
                 arePropertiesEditable(): boolean;
                 areTurnsLocked(node: WazeNS.Feature.Vector.Node):boolean;
-                getAddress(): {
-                    street: WazeNS.Model.Object.Street;
-                    city: WazeNS.Modules.Cities.Model.City;
-                    state: WazeNS.Model.Object.State;
-                    country: WazeNS.Model.Object.Country;
-                    altStreets: Array<WazeNS.Model.Object.Street>;
+                getAddress(): WazeNS.Model.Object.Address;
+                getFlagAttributes(): {
+                    beacons: boolean;
+                    fwdLanesEnabled: boolean;
+                    fwdSpeedCamera: boolean;
+                    headlights: boolean;
+                    nearbyHOV: boolean;
+                    revLanesEnabled: boolean;
+                    revSpeedCamera: boolean;
+                    tunnel: boolean;
+                    unpaved: boolean;
                 };
+                getFlagAttribute(flag: string): boolean;
                 getRoundabout(): WazeNS.Model.Object.Junction;
+                hasBeacons(): boolean;
+                hasClosures(): boolean;
+                hasNonEmptyStreet(): boolean;
+                hasRestrictions(): boolean;
                 isDrivable(): boolean;
                 isInBigJunction(): boolean;
                 isInRoundabout(): boolean;
+                isLanesEnabled(): boolean;
                 isLockedByHigherRank(): boolean;
+                isTollRoad(): boolean;
                 isTurnAllowed(toSegment: Model.Object.Segment, Node): boolean;
                 getRestrictionCount(): number;
                 getConnectedSegments(direction: string): Array<Model.Object.Segment>;
@@ -460,14 +602,35 @@ declare namespace WazeNS
                 StaffRank: number;
                 isStaffUser(): boolean;
             }
+
+            export interface Venue extends WazeNS.Feature.Vector<string> {
+                areExternalProvidersEditable(): boolean;
+                arePropertiesEditable(): boolean;
+                areUpdateRequestsEditable(): boolean;
+                canConvertToPublic(): boolean;
+                getAddress(): WazeNS.Model.Object.Address;
+                getCategorySet(): Set<string>;
+                getLockRank(): number;
+                getMainCategory(): string;
+                getPointGeometry(): OpenLayers.Geometry.Point;
+                getPolygonGeometry(): OpenLayers.Geometry.Polygon;
+                hasOpenUpdateRequests(): boolean;
+                hasUpdateRequests(): boolean;
+                is2D(): boolean;
+                isAdLocked(): boolean;
+                isApproved(): boolean;
+                isGasStation(): boolean;
+                isParkingLot(): boolean;
+                isPoint(): boolean;
+                isResidential(): boolean;
+
+            }
         }
 
-        export interface Vector extends OpenLayers.Feature.Vector
+        export interface Vector<T> extends WazeNS.Model.Object<T>
         {
-            arePropertiesEditable(): boolean;
             type: string;
             CLASS_NAME: string;
-            isGeometryEditable(): boolean;
         }
     }
 
@@ -478,7 +641,7 @@ declare namespace WazeNS
                     getValidCities(): Array<WazeNS.Modules.Cities.Model.City>;
                 }
 
-                export interface City extends WazeNS.Feature.Vector {
+                export interface City extends WazeNS.Feature.Vector<string> {
                     attributes: {
                         countryID: number;
                         englishName: string;
@@ -488,6 +651,7 @@ declare namespace WazeNS
                         name: string;
                         rank: number;
                         stateID: number;
+                        labelText: string;
                     }
                     geometry: OpenLayers.Geometry;
                     hasName(): boolean;
@@ -503,7 +667,7 @@ interface WazeStatic {
     loginManager: WazeNS.LoginManager;
     map: WazeNS.Map;
     model: WazeNS.DataModel;
-    vent: Backbone.Wreqr.EventAggregator;
+    vent: any;
     controller: WazeNS.Controller;
     location: {
         code: string;
@@ -517,6 +681,8 @@ interface WazeStatic {
             }
         }
     };
+    app: WazeNS.App;
+    prefs: WazeNS.Prefs;
 }
 
 declare var W: WazeStatic;

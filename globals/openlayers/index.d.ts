@@ -60,6 +60,11 @@ declare namespace OpenLayers {
 
     }
 
+    interface FeatureAttributes {
+        name: string;
+        labelText: string;
+    }
+
     export class Animation {
         // TODO
     }
@@ -1131,6 +1136,8 @@ declare namespace OpenLayers {
          * Calculate the centroid of this geometry.  This method is defined in subclasses.
          */
         getCentroid(): Geometry.Point;
+
+        intersects(geometry: OpenLayers.Geometry);
 
         static fromWKT(wkt: string): OpenLayers.Geometry | Array;
     }
@@ -2460,7 +2467,7 @@ declare namespace OpenLayers {
          * Parameters:
          * zoom - {Integer}
          */
-        zoomTo(zoom: number, px: Pixel): void;
+        zoomTo(zoom: number, px?: Pixel): void;
 
         /**
          * APIMethod: zoomIn
@@ -3458,6 +3465,7 @@ declare namespace OpenLayers {
             constructor(geometry: OpenLayers.Geometry, attributes?: any, style?: any)
             geometry: OpenLayers.Geometry;
             style: any;
+            attributes: FeatureAttributes
             // TODO
         }
     }

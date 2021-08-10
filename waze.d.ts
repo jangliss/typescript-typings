@@ -585,7 +585,7 @@ declare namespace WazeNS
                 isDrivable(): boolean;
                 isInBigJunction(): boolean;
                 isInRoundabout(): boolean;
-                isLanesEnabled(): boolean;
+                isLanesEnabled(fwdOrReverse: number): boolean;
                 isLockedByHigherRank(): boolean;
                 isTollRoad(): boolean;
                 isTurnAllowed(toSegment: Model.Object.Segment, Node): boolean;

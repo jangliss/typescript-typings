@@ -72,6 +72,7 @@ declare namespace WazeNS
     {
         addUniqueLayer(layer: OpenLayers.Layer): void;
         getLayerByUniqueName(layer: string): OpenLayers.Layer.Vector;
+        getLayerByName(layer: string): OpenLayers.Layer.Vector;
         setLayerVisibility(layer: string, state: boolean): void;
         zoomTo(zoomLevel: number): void;
         roadLayers: Array<OpenLayers.Layer.XYZ>;

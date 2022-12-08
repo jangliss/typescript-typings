@@ -22,6 +22,7 @@ declare namespace WazeNS
         mapComments: Model.StringRepository<Model.Object.MapComment>;
         repositoryFilters: any;
         segments: Model.RepositoryOfSegments;
+        segmentSuggestions: Model.NumberRepository<WazeNS.Model.Object.SegmentSuggestion>;
         streets: Model.NumberRepository<WazeNS.Model.Object.Street>;
         states: Model.NumberRepository<WazeNS.Model.Object.State>;
         venues: Model.VenueRepository;
@@ -291,7 +292,29 @@ declare namespace WazeNS
                     validated: boolean;
                 };
                 geometry: OpenLayers.Geometry.Collection;
-                getDrivingRestrictionCount(): number;
+            }
+
+            export interface SegmentSuggestion extends Feature.Vector.SegmentSuggestion
+            {
+                attributes: {
+                    confidenceScore: number;
+                    countryId: number;
+                    fwdDirection: boolean;
+                    fwdMaxSpeed: number;
+                    geometry: OpenLayers.Geometry;
+                    rejectionReason: string;
+                    revDirection: boolean;
+                    revMaxSpeed: number;
+                    roadType: number;
+                    status: string;
+                    streetName: string;
+                    tunnel: boolean;
+                    unpaved: boolean;
+                    updatedBy: number;
+                    updatedOn: number;
+                    wazeSegmentId: number;
+                };
+                geometry: OpenLayers.Geometry.Collection;
             }
 
             export interface Street extends Model.Object<number>
@@ -373,7 +396,7 @@ declare namespace WazeNS
             export interface TurnData {
                 getInstructionOpcode(): string;
                 hasInstructionOpcode(): boolean;
-                getRestrictions() : Array<any>;
+                getRestrictions() : Array<Feature.TurnRestriction>;
                 isAllowed(): boolean;
                 isDisallowed(): boolean;
                 isUnknown(): boolean;
@@ -393,6 +416,7 @@ declare namespace WazeNS
                 text: string;
                 type: number
             }
+
         }
 
         interface NumberRepository<T> extends WazeNS.Model.ObjectRepository<T, number>
@@ -562,7 +586,7 @@ declare namespace WazeNS
 
             export interface Segment extends WazeNS.Feature.Vector<number>
             {
-                arePropertiesEditable(): boolean;
+                // arePropertiesEditable(): boolean;
                 areTurnsLocked(node: WazeNS.Feature.Vector.Node):boolean;
                 getAddress(): WazeNS.Model.Object.Address;
                 getFlagAttributes(): {
@@ -588,11 +612,19 @@ declare namespace WazeNS
                 isLanesEnabled(fwdOrReverse: number): boolean;
                 isLockedByHigherRank(): boolean;
                 isTollRoad(): boolean;
-                isTurnAllowed(toSegment: Model.Object.Segment, Node): boolean;
-                getRestrictionCount(): number;
+                isTurnAllowed(toSegment: Model.Object.Segment, Node: any): boolean;
+                // getRestrictionCount(): number;
                 getConnectedSegments(direction: string): Array<Model.Object.Segment>;
                 getConnectedSegmentsByDirection(direction: string) : Array<Model.Object.Segment>;
+                getDrivingRestrictionCount(): number;
+                getDrivingRestrictions(): Array<DrivingRestriction>;
                 getNodeByDirection(direction: string): Feature.Vector.Node;
+            }
+
+            export interface SegmentSuggestion extends WazeNS.Feature.Vector<number>
+            {
+                getCenter(): any;
+                getStatus(): string;
             }
 
             export interface User
@@ -625,6 +657,16 @@ declare namespace WazeNS
                 isResidential(): boolean;
 
             }
+        }
+
+        export interface DrivingRestriction extends Restriction {
+        }
+
+        export interface TurnRestriction extends Restriction {
+        }
+
+        export interface Restriction {
+            isExpired(): boolean;
         }
 
         export interface Vector<T> extends WazeNS.Model.Object<T>

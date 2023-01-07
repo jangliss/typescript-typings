@@ -302,7 +302,7 @@ declare namespace WazeNS
                     fwdDirection: boolean;
                     fwdMaxSpeed: number;
                     geometry: OpenLayers.Geometry;
-                    rejectionReason: string;
+                    rejectionReason: number;
                     revDirection: boolean;
                     revMaxSpeed: number;
                     roadType: number;

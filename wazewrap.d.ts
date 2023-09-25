@@ -1,3 +1,5 @@
+/// <reference path="waze.d.ts" />
+
 declare namespace WazeWrap
 {
     namespace Model
@@ -84,6 +86,12 @@ declare namespace WazeWrap
         function debug(scriptName: string, message: string): void;
         function prompt(scriptName: string, message: string, defaultText?: string, okFunction?: any, cancelFunction?: any): void;
         function confirm(scriptName: string, message: string, okFunction?: any, cancelFunction?: any, okBtnText?: string, cancelBtnText?: string): void;
+        class ScriptUpdateMonitor {
+            constructor(scriptName: string, currentVersion: string|number, downloadUrl: string, GM_xmlHTTPRequest: object,
+                metaUrl?: string, metaRegExp?: RegExp);
+            start(intervalHours?: number, checkImmediately?: boolean): void;
+            stop(): void;
+        }
     }
 
     namespace Remote {

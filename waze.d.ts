@@ -78,6 +78,7 @@ declare namespace WazeNS
         zoomTo(zoomLevel: number): void;
         roadLayers: Array<OpenLayers.Layer.XYZ>;
         getOLMap(): OpenLayers.Map;
+        moveTo(location: { lon: number, lat: number}): void;
     }
 
     export interface SelectedItem extends WazeNS.Feature.Vector<string> {
@@ -507,6 +508,7 @@ declare namespace WazeNS
         {
             getByAttributes(e: any): T;
             getObjectById(id: TId): T;
+            getObjectArray(): Array<T>;
         }
 
         export interface SegmentRepository extends ObjectRepository<Model.Object.Segment, number>

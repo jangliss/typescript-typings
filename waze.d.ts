@@ -1,4 +1,5 @@
 /// <reference path='globals/openlayers/index.d.ts' />
+/// <reference path='globals/geojson/index.d.ts' />
 
 interface Array<T>
 {
@@ -25,6 +26,7 @@ declare namespace WazeNS
         segmentSuggestions: Model.NumberRepository<WazeNS.Model.Object.SegmentSuggestion>;
         streets: Model.NumberRepository<WazeNS.Model.Object.Street>;
         states: Model.NumberRepository<WazeNS.Model.Object.State>;
+        countries: Model.NumberRepository<WazeNS.Model.Object.Country>;
         venues: Model.VenueRepository;
         isLeftHand: boolean;
         lastTransactionID: string;
@@ -121,6 +123,12 @@ declare namespace WazeNS
         registerSidebarTab(scriptId: string): RegisterSidebarTabResult;
         waitForElementConnected(el: HTMLElement): Promise<void>;
         removeSidebarTab(scriptId: string): void;
+        getDataModelByFeatureElement(el: OpenLayers.Geometry): any;
+        getDataModelByMapElement(el: OpenLayers.Geometry): any;
+        getFeatureElementByDataModel(): any;
+        getMapElementByDataModel(): any;
+        toGeoJSONGeometry(olGeom: OpenLayers.Geometry): any;
+        toOLGeometry(geoObj: GeoJSON.Geometry): OpenLayers.Geometry;
     }
 
     namespace Model
@@ -164,7 +172,7 @@ declare namespace WazeNS
                 getCountryID(): number;
                 getEnglishName(): string;
                 hasName(): boolean;
-                getName(): boolean;
+                getName(): string;
                 isEmpty(): boolean;
             }
 
@@ -233,6 +241,7 @@ declare namespace WazeNS
                 isPoint(): boolean;
                 getPointGeometry(): OpenLayers.Geometry;
                 getPolygonGeometry(): OpenLayers.Geometry;
+                getOLGeometry(): OpenLayers.Geometry;
                 getComments(): ModelCollection<Comment>;
             }
 
@@ -282,7 +291,7 @@ declare namespace WazeNS
                         isPrimary(): boolean;
                     }>;
                     externalProviderIDs: Array<WazeNS.Model.Object.ExternalProvider>;
-                    geometry: OpenLayers.Geometry.Collection;
+                    geometry: GeoJSON.GeometryCollection;
                     houseNumber: string;
                     id: string;
                     lockRank: number;
@@ -599,6 +608,7 @@ declare namespace WazeNS
                 getNavigationPoint(): WazeNS.Model.Object.NavigationPoint;
                 getPointGeometry(): OpenLayers.Geometry.Point;
                 getPolygonGeometry(): OpenLayers.Geometry.Polygon;
+                getOLGeometry(): OpenLayers.Geometry;
                 hasOpenUpdateRequests(): boolean;
                 isApproved(): boolean;
                 isGasStation(): boolean;
@@ -694,6 +704,7 @@ declare namespace WazeNS
                 getMainCategory(): string;
                 getPointGeometry(): OpenLayers.Geometry.Point;
                 getPolygonGeometry(): OpenLayers.Geometry.Polygon;
+                getOLGeometry(): OpenLayers.Geometry;
                 hasOpenUpdateRequests(): boolean;
                 hasUpdateRequests(): boolean;
                 is2D(): boolean;

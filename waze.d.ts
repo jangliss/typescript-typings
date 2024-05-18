@@ -645,7 +645,7 @@ declare namespace WazeNS
             {
                 // arePropertiesEditable(): boolean;
                 areTurnsLocked(node: WazeNS.Feature.Vector.Node):boolean;
-                getAddress(): WazeNS.Model.Object.Address;
+                getAddress(model: WazeNS.DataModel): WazeNS.Model.Object.Address;
                 getFlagAttributes(): {
                     beacons: boolean;
                     fwdLanesEnabled: boolean;
@@ -669,10 +669,10 @@ declare namespace WazeNS
                 isLanesEnabled(fwdOrReverse: number): boolean;
                 isLockedByHigherRank(): boolean;
                 isTollRoad(): boolean;
-                isTurnAllowed(toSegment: Model.Object.Segment, Node: any): boolean;
+                isTurnAllowed(model: WazeNS.DataModel,toSegment: Model.Object.Segment, Node: any): boolean;
                 // getRestrictionCount(): number;
-                getConnectedSegments(direction: string): Array<Model.Object.Segment>;
-                getConnectedSegmentsByDirection(direction: string) : Array<Model.Object.Segment>;
+                getConnectedSegments(model: WazeNS.DataModel, direction: string): Array<Model.Object.Segment>;
+                getConnectedSegmentsByDirection(model: WazeNS.DataModel, direction: string) : Array<Model.Object.Segment>;
                 getDrivingRestrictionCount(): number;
                 getDrivingRestrictions(): Array<DrivingRestriction>;
                 getNodeByDirection(direction: string): Feature.Vector.Node;
@@ -698,7 +698,7 @@ declare namespace WazeNS
                 arePropertiesEditable(): boolean;
                 areUpdateRequestsEditable(): boolean;
                 canConvertToPublic(): boolean;
-                getAddress(): WazeNS.Model.Object.Address;
+                getAddress(model: WazeNS.DataModel): WazeNS.Model.Object.Address;
                 getCategorySet(): Set<string>;
                 getLockRank(): number;
                 getMainCategory(): string;

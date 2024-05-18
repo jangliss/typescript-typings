@@ -1,4 +1,5 @@
 /// <reference path='globals/openlayers/index.d.ts' />
+/// <reference path='globals/geojson/index.d.ts' />
 
 interface Array<T>
 {
@@ -122,6 +123,12 @@ declare namespace WazeNS
         registerSidebarTab(scriptId: string): RegisterSidebarTabResult;
         waitForElementConnected(el: HTMLElement): Promise<void>;
         removeSidebarTab(scriptId: string): void;
+        getDataModelByFeatureElement(el: OpenLayers.Geometry): any;
+        getDataModelByMapElement(el: OpenLayers.Geometry): any;
+        getFeatureElementByDataModel(): any;
+        getMapElementByDataModel(): any;
+        toGeoJSONGeometry(olGeom: OpenLayers.Geometry): any;
+        toOLGeometry(geoObj: GeoJSON.Geometry): OpenLayers.Geometry;
     }
 
     namespace Model
@@ -165,7 +172,7 @@ declare namespace WazeNS
                 getCountryID(): number;
                 getEnglishName(): string;
                 hasName(): boolean;
-                getName(): boolean;
+                getName(): string;
                 isEmpty(): boolean;
             }
 
@@ -285,6 +292,7 @@ declare namespace WazeNS
                     }>;
                     externalProviderIDs: Array<WazeNS.Model.Object.ExternalProvider>;
                     geometry: OpenLayers.Geometry.Collection;
+                    geoJSONGeometry: GeoJSON.GeometryCollection;
                     houseNumber: string;
                     id: string;
                     lockRank: number;
@@ -298,7 +306,8 @@ declare namespace WazeNS
                     url: string;
                 };
                 getName(): string;
-                isAdLocked(): boolean
+                isAdLocked(): boolean;
+                getGeometry(): GeoJSON.GeometryCollection;
             }
 
             export interface Segment extends Feature.Vector.Segment
@@ -601,6 +610,7 @@ declare namespace WazeNS
                 getNavigationPoint(): WazeNS.Model.Object.NavigationPoint;
                 getPointGeometry(): OpenLayers.Geometry.Point;
                 getPolygonGeometry(): OpenLayers.Geometry.Polygon;
+                getOLGeometry(): OpenLayers.Geometry;
                 hasOpenUpdateRequests(): boolean;
                 isApproved(): boolean;
                 isGasStation(): boolean;
@@ -637,7 +647,7 @@ declare namespace WazeNS
             {
                 // arePropertiesEditable(): boolean;
                 areTurnsLocked(node: WazeNS.Feature.Vector.Node):boolean;
-                getAddress(): WazeNS.Model.Object.Address;
+                getAddress(model: WazeNS.DataModel): WazeNS.Model.Object.Address;
                 getFlagAttributes(): {
                     beacons: boolean;
                     fwdLanesEnabled: boolean;
@@ -661,10 +671,10 @@ declare namespace WazeNS
                 isLanesEnabled(fwdOrReverse: number): boolean;
                 isLockedByHigherRank(): boolean;
                 isTollRoad(): boolean;
-                isTurnAllowed(toSegment: Model.Object.Segment, Node: any): boolean;
+                isTurnAllowed(model: WazeNS.DataModel,toSegment: Model.Object.Segment, Node: any): boolean;
                 // getRestrictionCount(): number;
-                getConnectedSegments(direction: string): Array<Model.Object.Segment>;
-                getConnectedSegmentsByDirection(direction: string) : Array<Model.Object.Segment>;
+                getConnectedSegments(model: WazeNS.DataModel, direction: string): Array<Model.Object.Segment>;
+                getConnectedSegmentsByDirection(model: WazeNS.DataModel, direction: string) : Array<Model.Object.Segment>;
                 getDrivingRestrictionCount(): number;
                 getDrivingRestrictions(): Array<DrivingRestriction>;
                 getNodeByDirection(direction: string): Feature.Vector.Node;
@@ -690,7 +700,7 @@ declare namespace WazeNS
                 arePropertiesEditable(): boolean;
                 areUpdateRequestsEditable(): boolean;
                 canConvertToPublic(): boolean;
-                getAddress(): WazeNS.Model.Object.Address;
+                getAddress(model: WazeNS.DataModel): WazeNS.Model.Object.Address;
                 getCategorySet(): Set<string>;
                 getLockRank(): number;
                 getMainCategory(): string;

@@ -291,7 +291,8 @@ declare namespace WazeNS
                         isPrimary(): boolean;
                     }>;
                     externalProviderIDs: Array<WazeNS.Model.Object.ExternalProvider>;
-                    geometry: GeoJSON.GeometryCollection;
+                    geometry: OpenLayers.Geometry.Collection;
+                    geoJSONGeometry: GeoJSON.GeometryCollection;
                     houseNumber: string;
                     id: string;
                     lockRank: number;
@@ -305,7 +306,8 @@ declare namespace WazeNS
                     url: string;
                 };
                 getName(): string;
-                isAdLocked(): boolean
+                isAdLocked(): boolean;
+                getGeometry(): GeoJSON.GeometryCollection;
             }
 
             export interface Segment extends Feature.Vector.Segment

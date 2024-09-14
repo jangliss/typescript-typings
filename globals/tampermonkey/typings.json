@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/c35ca8d9c5030fa6c4d60f9c69517aac5477316b/types/tampermonkey/index.d.ts",
+    "raw": "registry:dt/tampermonkey#5.0.2",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/c35ca8d9c5030fa6c4d60f9c69517aac5477316b/types/tampermonkey/index.d.ts"
+  }
+}

@@ -80,6 +80,7 @@ declare namespace WazeNS
         zoomTo(zoomLevel: number): void;
         roadLayers: Array<OpenLayers.Layer.XYZ>;
         getOLMap(): OpenLayers.Map;
+        getOLExtent() : OpenLayers.Bounds;
         moveTo(location: { lon: number, lat: number}): void;
     }
 
